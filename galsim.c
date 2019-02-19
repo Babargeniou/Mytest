@@ -15,19 +15,23 @@ int main(int argc, const char** argv) {
   if(argc != 6) {
     printf("Please give give arguments: input_file_name \n");
     return -1;
-          } 
+  } 
 
 int N = atoi(argv[1]);
 const char* in_file = argv[2];
 int nsteps = atoi(argv[3]);
-int delta_t = atoi(argv[4]);
+double delta_t = atoi(argv[4]);
 int graphics = atoi(argv[5]);
 
-printf("%d\n",N);
+printf("Number of particles: %d\n",N);
 printf("input_file_name = %s\n", in_file);
-printf("%d\n",nsteps);
-printf("%d\n",delta_t);
-printf("%d\n", graphics);
+printf("Number of timesteps: %d\n",nsteps);
+printf("timestep: %f\n",delta_t);
+printf("Graphics: %d\n", graphics);
+
+if (graphics == 1) {
+  printf(" Graphics not implemented\n");
+}
 
 printf("\n");
 
@@ -39,51 +43,24 @@ printf("\n");
     return -1;
   }
 
-    for(int i = 0; i < N; i++){
-      printf("x%d: %0.10f\n",i,buf1[i*6+0]);
-      x[i] = buf1[i*6+0];
-      printf("y%d: %0.10f\n",i,buf1[i*6+1]);
-      y[i] = buf1[i*6+1];
-      printf("mass%d: %0.10f\n",i,buf1[i*6+2]);
-      printf("vx%d: %0.10f\n",i,buf1[i*6+3]);
-      vx[i] = buf1[i*6+3];
-      printf("vy%d; %0.10f\n",i,buf1[i*6+4]);
-      vy[i] = buf1[i*6+4];
-      printf("brightness%d: %0.10f\n",i,buf1[i*6+5]);
-      printf("\n");
+    double time1 = get_wall_seconds();
+    calcul(N, buf1, nsteps, delta_t);
+    double time2 = get_wall_seconds();
+    
+    printf("secondsTaken: %f\n",time2-time1);
 
-      r01[i] =  (x[i] - x[i+1])  +  (y[i] - y[i+1]) ;
-      R01[i] = sqrt(  ( (x[i] - x[i+1])*(x[i] - x[i+1]) )  + ( (y[i] - y[i+1])*(y[i] - y[i+1]) ) ) ;
+    /* Output file*/
 
-      printf("r01%d: %f\n", i, r01[i]);
-      printf("R01%d: %f\n", i, R01[i]);
+    FILE * output_file = fopen("result.gal", "wb");
+    if(!output_file) {
 
-      printf("\n");
+      printf("File error: failed to open Output file.\n");
+      return -1;
+    }
 
-}
+    fwrite(buf1, sizeof(char), 6 * N * sizeof(double), output_file);
 
-printf("%f\n", x[0]);
-printf("%f\n", y[0]);
+    fclose(output_file);
 
-
-double E0 = 10^-3;
-double G = (double)100/N;
-
-//for(int j=0; j<=)
-
-
-r011[0] =  (x[0] - x[1])  +  (y[0] - y[1]) ;
-R011[0] = sqrt(  ( (x[0] - x[1])*(x[0] - x[1]) )  + ( (y[0] - y[1])*(y[0] - y[1]) ) ) ;
-
-//Norm_ro1 = r01/R01;
-
-printf("r011: %f\n", r011[0]);
-printf("R011: %f\n", R011[0]);
-
-//printf("Norm_ro1: %f\n", Norm_ro1);
-
-
-
- //fclose(buf1);
   return 0;
 }
